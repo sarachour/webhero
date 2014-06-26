@@ -6,12 +6,19 @@ Maps are 2D grid with stacked items
 Block = function(look){
 	this.init = function(look){
 		this.geometry = new THREE.BoxGeometry(1,1,1);
-		this.tex = assetManager.getTexture("a");
-		this.material = new THREE.MeshBasicMaterial({
-			//color: 0x00ff00
-			map: this.tex,
-			side: THREE.DoubleSide
-		});
+		if(look.hasOwnProperty("texture")){
+			this.texture = assetManager.getTexture(look.texture);
+			this.material = new THREE.MeshBasicMaterial({
+				//color: 0x00ff00
+				map: this.texture,
+				side: THREE.DoubleSide
+			});
+		}
+		else if(look.hasOwnProperty("color")){
+			this.material = new THREE.MeshBasicMaterial({
+				color: look.color
+			});
+		}
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 	}
 	this.d = function(){
@@ -45,6 +52,12 @@ AssetManager = function(){
 			return null;
 		}
 	}
+	this.addBlock = function(id, blk){
+		this.assets.blocks[id] = blk;
+	}
+	this.getBlock = function(id){
+		return this.assets.blocks[id];
+	}
 	this.add = function(category, id, block){
 		if(!this.assets.hasOwnProperty(category)){
 			this.assets[category] = {};
@@ -58,7 +71,18 @@ AssetManager = function(){
 }
 assetManager = new AssetManager();
 function loadAssets(){
-	assetManager.addTexture("a", "assets/textures/test.png");
+	//add texture
+	assetManager.addTexture("lava1", "assets/textures/test.png");
+
+	//add block
+	assetManager.addBlock("lava-block", new Block({
+		texture: "lava1" //
+	}));
+	assetManager.addBlock("green-block", new Block({
+		color: 0x00ff00 //
+	}));
+
+	//add Entity
 }
 
 Element = function(blocks){
@@ -71,8 +95,8 @@ Element = function(blocks){
 Map = function(){
 	this.init = function(){
 		this.scene = new THREE.Scene();
-		this.cube = new Block();
-		this.scene.add(this.cube.d());
+		this.scene.add(assetManager.getBlock("green-block").d());
+		//this.scene.add(assetManager.getBlock("lava-block").d());
 	}
 	this.d = function(){
 		return this.scene;
