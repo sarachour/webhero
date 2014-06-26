@@ -4,9 +4,13 @@ function SetupLayout(){
 	$('#play-game').click(function(d){
 		chrome.tabs.query({currentWindow: true, active:true}, function(tabs){
 			if(tabs.length == 1){
-				chrome.tabs.executeScript(tabs[0].id, {file: "js/web.js"}, function(){
-					console.log("injected");
+				var tid = tabs[0].id;
+				chrome.tabs.executeScript(tid, {file: "lib/jquery-1.10.2.js"}, function(e1){
+					chrome.tabs.executeScript(tid, {file: "js/web.js"}, function(e2){
+						console.log("<INJECTED SCRIPT>",e1,e2);
+					});
 				});
+				
 			}
 		});
 	});

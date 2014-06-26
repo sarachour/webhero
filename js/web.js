@@ -1,4 +1,9 @@
 console.log(document);
+
+chrome.runtime.sendMessage({
+    from:    'content',
+    subject: 'send_level'
+});
 /*
 Color Scheme: Css File
    - color frequencies
