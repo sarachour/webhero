@@ -3,6 +3,35 @@
 Maps are 2D grid with stacked items
 */
 
+Sprite = function(data){
+	this.init = function(data){
+		if(data.type == "reference"){
+			this.texture = data.ref.texture;
+			this.material = data.ref.material;
+			this.mesh =  data.ref.mesh;
+		}
+		else if(data.type == "texture"){
+			this.texture = assetManager.getTexture(data.texture);
+			this.material = new THREE.SpriteMaterial({
+				map: this.texture
+			});
+			this.mesh = new THREE.Sprite( this.material );
+		}
+	}
+	this.instance = function(){
+		return new Sprite({type:"reference", ref:this});
+	}
+	this.translate = function(x,y,z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.mesh.position.set(x,y,z);
+	}
+	this.d = function(){
+		return this.mesh;
+	}
+	this.init(data);
+}
 Block = function(data){
 	this.init = function(data){
 		
@@ -14,7 +43,7 @@ Block = function(data){
 			this.materials = data.ref.materials;
 			this.textures = data.ref.textures;
 		}
-		if(data.type == "texture"){
+		else if(data.type == "texture"){
 			this.geometry = new THREE.BoxGeometry(1,1,1);
 			this.texture = assetManager.getTexture(data.texture);
 			this.material = new THREE.MeshBasicMaterial({
@@ -61,13 +90,11 @@ Block = function(data){
 AssetManager = function(){
 	this.init = function(){
 		this.assets = {};
-		this.assets.blocks = {};
-		this.assets.sounds = {};
-		this.assets.elements = {};
-		this.assets.npcs = {};
-		this.assets.monsters = {};
 		this.assets.textures = {};
-		this.assets.materials = {};
+		this.assets.blocks = {};
+		this.assets.sprites = {};
+		this.assets.elements = {};
+
 	}
 	this.addTexture = function(id, url){
 		var tex=  new THREE.ImageUtils.loadTexture( url );
@@ -85,6 +112,12 @@ AssetManager = function(){
 			console.log("No Texture:",id);
 			return null;
 		}
+	}
+	this.addSprite = function(id, spr){
+		this.assets.sprites[id] = spr;
+	}
+	this.getSprite = function(id, spr){
+		return this.assets.sprites[id];
 	}
 	this.addBlock = function(id, blk){
 		this.assets.blocks[id] = blk;
@@ -108,6 +141,7 @@ function loadAssets(){
 	assetManager.addTexture("bedrock", "assets/blocks/bedrock.png");
 	assetManager.addTexture("grass_s", "assets/blocks/grass_side.png");
 	assetManager.addTexture("grass_t", "assets/blocks/grass_top.png");
+	assetManager.addTexture("redTulip", "assets/sprites/flower_tulip_red.png");
 	//add block
 	assetManager.addBlock("clay", new Block({
 		type: "texture",
@@ -126,6 +160,10 @@ function loadAssets(){
 		texture: ["grass_s", "grass_s", "grass_t", "grass_s", "grass_s", "grass_s"]
 	}));
 
+	assetManager.addSprite("redTulip", new Sprite({
+		type: "texture",
+		texture: "redTulip"
+	}))
 	//add Entity
 	assetManager.addElement("rock-pillar", new Element([
 		{name: "clay", x:0, y:0, z:0},
@@ -169,10 +207,13 @@ Map = function(){
 		this.h = 10;
 		var g = assetManager.getElement("rock-pillar");
 		var g2 = assetManager.getBlock("grass");
+		var f = assetManager.getSprite("redTulip");
 		g2.translate(2,0,0);
 		g.translate(-1,0,0);
+		f.translate(1,0,0);
 		this.scene.add(g.d());
 		this.scene.add(g2.d());
+		this.scene.add(f.d());
 	}
 	this.d = function(){
 		return this.scene;
