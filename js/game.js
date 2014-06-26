@@ -51,6 +51,8 @@ AssetManager = function(){
 		var tex=  new THREE.ImageUtils.loadTexture( url );
 		tex.wrapS = tex.wrapT = THREE.RepeatWrapping; 
 		tex.repeat.set( 1, 1 );
+		tex.magFilter = THREE.NearestFilter;
+		tex.minFilter = THREE.LinearMipMapLinearFilter;
 		this.assets.textures[id] = tex;
 	}
 	this.getTexture = function(id){
@@ -79,24 +81,29 @@ AssetManager = function(){
 assetManager = new AssetManager();
 function loadAssets(){
 	//add texture
-	assetManager.addTexture("lava1", "assets/textures/test.png");
-
+	assetManager.addTexture("clay", "assets/blocks/clay.png");
+	assetManager.addTexture("brick", "assets/blocks/brick.png");
+	assetManager.addTexture("bedrock", "assets/blocks/bedrock.png");
 	//add block
-	assetManager.addBlock("lava-block", new Block({
-		texture: "lava1", //
+	assetManager.addBlock("clay", new Block({
+		texture: "clay", //
 		fast: true
 	}));
-	assetManager.addBlock("green-block", new Block({
-		color: 0x00ff00, //
+	assetManager.addBlock("brick", new Block({
+		texture: "brick", //
+		fast: true
+	}));
+	assetManager.addBlock("bedrock", new Block({
+		texture: "bedrock", //
 		fast: true
 	}));
 
 	//add Entity
-	assetManager.addElement("green-stick", new Element([
-			{name: "lava-block", x:0, y:0, z:0},
-			{name: "green-block", x:0, y:1, z:0},
-			{name: "green-block", x:0, y:2, z:0},
-		]))
+	assetManager.addElement("rock-pillar", new Element([
+		{name: "clay", x:0, y:0, z:0},
+		{name: "bedrock", x:0, y:1, z:0},
+		{name: "bedrock", x:0, y:2, z:0},
+	]));
 }
 
 Element = function(blocks){
@@ -132,8 +139,8 @@ Map = function(){
 		this.scene = new THREE.Scene();
 		this.w = 10;
 		this.h = 10;
-		var g = assetManager.getElement("green-stick");
-		var g2 = assetManager.getBlock("lava-block");
+		var g = assetManager.getElement("rock-pillar");
+		var g2 = assetManager.getBlock("brick");
 		g2.translate(2,0,0);
 		g.translate(-1,0,0);
 		this.scene.add(g.d());
