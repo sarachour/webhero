@@ -5,9 +5,17 @@ Maps are 2D grid with stacked items
 
 Block = function(data){
 	this.init = function(data){
-		this.geometry = new THREE.BoxGeometry(1,1,1);
+		
 		this.data = data;
-		if(data.hasOwnProperty("texture")){
+		if(data.type == "reference"){
+			this.geometry = data.ref.geometry;
+			this.material = data.ref.material;
+			this.texture = data.ref.texture;
+			this.materials = data.ref.materials;
+			this.textures = data.ref.textures;
+		}
+		if(data.type == "texture"){
+			this.geometry = new THREE.BoxGeometry(1,1,1);
 			this.texture = assetManager.getTexture(data.texture);
 			this.material = new THREE.MeshBasicMaterial({
 				//color: 0x00ff00
@@ -15,7 +23,21 @@ Block = function(data){
 				side: THREE.DoubleSide
 			});
 		}
-		else if(data.hasOwnProperty("color")){
+		else if(data.type == "multitexture"){
+			this.geometry = new THREE.BoxGeometry(1,1,1);
+			this.textures = [];
+			this.materials = [];
+			for(var i=0; i < data.texture.length; i++){
+				this.textures[i] = assetManager.getTexture(data.texture[i]);
+				this.materials[i] = new THREE.MeshBasicMaterial({
+					map: this.textures[i],
+					side: THREE.DoubleSide
+				});
+			}
+			this.material = new THREE.MeshFaceMaterial(this.materials);
+		}
+		else if(data.type == "color"){
+			this.geometry = new THREE.BoxGeometry(1,1,1);
 			this.material = new THREE.MeshBasicMaterial({
 				color: data.color
 			});
@@ -23,7 +45,7 @@ Block = function(data){
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 	}
 	this.instance = function(){
-		return new Block(this.data);
+		return new Block({type:"reference", ref:this});
 	}
 	this.translate = function(x,y,z){
 		this.x = x;
@@ -60,7 +82,7 @@ AssetManager = function(){
 			return this.assets.textures[id];
 		}
 		else{
-			console.err("No Texture");
+			console.log("No Texture:",id);
 			return null;
 		}
 	}
@@ -84,18 +106,24 @@ function loadAssets(){
 	assetManager.addTexture("clay", "assets/blocks/clay.png");
 	assetManager.addTexture("brick", "assets/blocks/brick.png");
 	assetManager.addTexture("bedrock", "assets/blocks/bedrock.png");
+	assetManager.addTexture("grass_s", "assets/blocks/grass_side.png");
+	assetManager.addTexture("grass_t", "assets/blocks/grass_top.png");
 	//add block
 	assetManager.addBlock("clay", new Block({
-		texture: "clay", //
-		fast: true
+		type: "texture",
+		texture: "clay"
 	}));
 	assetManager.addBlock("brick", new Block({
-		texture: "brick", //
-		fast: true
+		type: "texture",
+		texture: "brick"
 	}));
 	assetManager.addBlock("bedrock", new Block({
-		texture: "bedrock", //
-		fast: true
+		type: "texture",
+		texture: "bedrock"
+	}));
+	assetManager.addBlock("grass", new Block({
+		type: "multitexture",
+		texture: ["grass_s", "grass_s", "grass_t", "grass_s", "grass_s", "grass_s"]
 	}));
 
 	//add Entity
@@ -140,7 +168,7 @@ Map = function(){
 		this.w = 10;
 		this.h = 10;
 		var g = assetManager.getElement("rock-pillar");
-		var g2 = assetManager.getBlock("brick");
+		var g2 = assetManager.getBlock("grass");
 		g2.translate(2,0,0);
 		g.translate(-1,0,0);
 		this.scene.add(g.d());
