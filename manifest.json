@@ -3,10 +3,12 @@
 
   "name": "WebHero",
   "description": "The web is a dungeon crawler.",
-  "version": "1.22",
-
+  "version": "1.0.1",
   "permissions": [
-	  "storage"
+	  "storage",
+    "tabs",
+    "pageCapture",
+    "*://*/*"
 	],
   "browser_action": {
     "default_icon": "icon.png",
