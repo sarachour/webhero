@@ -3,28 +3,38 @@
 Maps are 2D grid with stacked items
 */
 
-Block = function(look){
-	this.init = function(look){
+Block = function(data){
+	this.init = function(data){
 		this.geometry = new THREE.BoxGeometry(1,1,1);
-		if(look.hasOwnProperty("texture")){
-			this.texture = assetManager.getTexture(look.texture);
+		this.data = data;
+		if(data.hasOwnProperty("texture")){
+			this.texture = assetManager.getTexture(data.texture);
 			this.material = new THREE.MeshBasicMaterial({
 				//color: 0x00ff00
 				map: this.texture,
 				side: THREE.DoubleSide
 			});
 		}
-		else if(look.hasOwnProperty("color")){
+		else if(data.hasOwnProperty("color")){
 			this.material = new THREE.MeshBasicMaterial({
-				color: look.color
+				color: data.color
 			});
 		}
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 	}
+	this.instance = function(){
+		return new Block(this.data);
+	}
+	this.translate = function(x,y,z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.mesh.position.set(x,y,z);
+	}
 	this.d = function(){
 		return this.mesh;
 	}
-	this.init(look);
+	this.init(data);
 }
 AssetManager = function(){
 	this.init = function(){
@@ -58,14 +68,11 @@ AssetManager = function(){
 	this.getBlock = function(id){
 		return this.assets.blocks[id];
 	}
-	this.add = function(category, id, block){
-		if(!this.assets.hasOwnProperty(category)){
-			this.assets[category] = {};
-		}
-		this.assets[category][id] = block;
+	this.addElement = function(id, entity){
+		this.assets.elements[id] = entity;
 	}
-	this.getInstance = function(category, id){
-		return this.assets[category][id];
+	this.getElement = function(id, element){
+		return this.assets.elements[id];
 	}
 	this.init();
 }
@@ -76,27 +83,61 @@ function loadAssets(){
 
 	//add block
 	assetManager.addBlock("lava-block", new Block({
-		texture: "lava1" //
+		texture: "lava1", //
+		fast: true
 	}));
 	assetManager.addBlock("green-block", new Block({
-		color: 0x00ff00 //
+		color: 0x00ff00, //
+		fast: true
 	}));
 
 	//add Entity
+	assetManager.addElement("green-stick", new Element([
+			{name: "lava-block", x:0, y:0, z:0},
+			{name: "green-block", x:0, y:1, z:0},
+			{name: "green-block", x:0, y:2, z:0},
+		]))
 }
 
 Element = function(blocks){
 	//internal coordinate system
-	this.init = function(we, he){
-
+	this.init = function(b){
+		this.x = this.y = this.z = 0;
+		this.group = new THREE.Object3D();
+		this.block = b;
+		for(var i =0; i < blocks.length; i++){
+			var model = assetManager.getBlock(b[i].name).instance();
+			model.translate(b[i].x, b[i].y, b[i].z);
+			this.block[i].model = model;
+			this.group.add(model.d());
+			//this.group = model;
+		}
 	}
-	this.init(we,he);
+	this.instance = function(){
+		return new Element(this.block);
+	}
+	this.translate = function(x,y,z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.group.position.set(x,y,z);
+	}
+	this.d = function(){
+		return this.group;
+	}
+	this.init(blocks);
 }
 Map = function(){
 	this.init = function(){
 		this.scene = new THREE.Scene();
-		this.scene.add(assetManager.getBlock("green-block").d());
-		//this.scene.add(assetManager.getBlock("lava-block").d());
+		this.w = 10;
+		this.h = 10;
+		var g = assetManager.getElement("green-stick");
+		var g2 = assetManager.getBlock("lava-block");
+		g2.translate(2,0,0);
+		g.translate(-1,0,0);
+		this.scene.add(g.d());
+		this.scene.add(g2.d());
 	}
 	this.d = function(){
 		return this.scene;
