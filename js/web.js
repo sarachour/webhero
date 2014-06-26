@@ -1,9 +1,38 @@
 console.log(document);
 
-chrome.runtime.sendMessage({
-    from:    'content',
-    subject: 'send_level'
-});
+ WebTools = function(){
+	this.init = function(){
+
+	}
+	/*
+	Global Properties:
+	record global frequency-based css properties [prop: value: freq]
+	  (background-color), (fg-color)
+	record css-style based css properties [style : values]
+	*/
+	this.build = function(){
+		//global properties.
+		$("*").each(function(i,b){
+			console.log(b);
+			console.log($(b).css("background-color"));
+		})
+		
+	}
+
+
+	this.send = function(){
+		chrome.runtime.sendMessage({
+		    from:    'content',
+		    subject: 'send_level'
+		});
+	}
+	this.init();
+
+}
+webTools = new WebTools;
+webTools.build();
+webTools.init();
+
 /*
 Color Scheme: Css File
    - color frequencies
