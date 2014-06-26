@@ -5,9 +5,24 @@
 
   <script src="lib/jquery-1.10.2.js"></script>
   <script src="lib/jquery-ui-1.10.4.min.js"></script>
-  <script src="lib/jlayout/jquery.sizes.js"></script>
-  <script src="lib/jlayout/jlayout.border.js"></script>
-  <script src="lib/jlayout/jquery.jlayout.js"></script>
+  <script src="lib/jquery.sizes.js"></script>
+  <script src="lib/jlayout.border.js"></script>
+  <script src="lib/jquery.jlayout.js"></script>
+  <script src="js/menu.js"></script>
 </head>
-
+<div id='menu-page' data-layout='{"type": "border", "hgap": 3, "vgap": 3}'  class="menu">
+	<div id='menu-list' class="west">
+		list
+	</div>
+	<div id='menu-list' class="center">
+		game body
+	</div>
+	<div id='menu-list' class="south">
+		status
+	</div>
+	<div id='menu-list' class="north">
+		<img src="images/world.png" class="icon" id="play-game"></img>
+		Menu
+	</div>
+</div>
 <body>

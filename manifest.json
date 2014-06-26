@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "WebHero",
+  "description": "The web is a dungeon crawler.",
+  "version": "1.22",
+
+  "permissions": [
+	  "storage"
+	],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "menu.html"
+  },
+  "options_page": "options.html",
+  "icons": { "16": "icon.png",
+           "48": "icon.png",
+          "128": "icon.png" }
+}
