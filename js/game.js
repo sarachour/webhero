@@ -40,6 +40,9 @@ Controls = function(){
 
 }
 Renderer = function(d,sc, cam, w,h){
+	this.animate = function(){
+
+	}
 	this.init = function(d,sc,cam,w,h){
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(w,h);
@@ -49,6 +52,7 @@ Renderer = function(d,sc, cam, w,h){
 		var that = this;
 		function render() {
 			requestAnimationFrame(render);
+			that.animate();
 			that.renderer.render(that.scene, that.camera);
 		}
 		render();
