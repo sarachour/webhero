@@ -61,7 +61,7 @@ Map = function(level){
 				}
 				else if(cell.type == "sprite"){
 					var elem = assetManager.getSprite(cell.name).translate(x,y,z);
-					this.scene.add(elem);
+					this.scene.add(elem.d());
 				}
 				y += elem.getHeight();
 			}
