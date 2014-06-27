@@ -43,16 +43,27 @@ Renderer = function(d,sc, cam, w,h){
 	this.animate = function(){
 
 	}
+	this.addAnimation = function(cbk){
+		var oldAnimate = this.animate;
+		this.animate = function(){
+			cbk();
+			oldAnimate();
+		}
+	}
 	this.init = function(d,sc,cam,w,h){
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(w,h);
 		this.scene = sc;
 		this.camera = cam;
+		this.intervals = {animation: {step:1000/12, curr:0}};
 		d.appendChild(this.renderer.domElement);
 		var that = this;
-		function render() {
+		function render(time) {
 			requestAnimationFrame(render);
-			that.animate();
+			if(time > that.intervals.animation.curr){
+				that.animate();
+				that.intervals.animation.curr += that.intervals.animation.step;
+			}
 			that.renderer.render(that.scene, that.camera);
 		}
 		render();
@@ -68,16 +79,17 @@ Game = function(d,w,h){
 		this.controls = new Controls();
 		this.map = new Map();
 		this.renderer = new Renderer(d,this.map.d(), this.camera.d(), w,h);
-	}
-	this.render = function(canv){
 
 	}
-	console.log(d,w,h);
 	this.init(d,w,h);
 }
 document.addEventListener('DOMContentLoaded', function() {
 	loadAssets();
 	game = new Game(document.body, 600, 400);
+
+	game.renderer.addAnimation(function(){
+		assetManager.getTexture("fire").update();
+	});
 
 	chrome.runtime.onMessage.addListener(function(msg, sender) {
 	    if ((msg.from === 'content') && (msg.subject === 'send_level')) {
