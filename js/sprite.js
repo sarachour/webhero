@@ -14,21 +14,33 @@ AnimatedTexture = function(x,y,texture){
 		this.current = {name: null, index: null};
 
 	}
-	this.add = function(name, type, data, repeat){
+	this.add = function(name, type, data, repeat, reverse){
 		var entry = {};
 		var that = this;
 
 		entry.type = type;
 		entry.repeat = repeat;
-		entry.doNext = function(e, i){
-			if(i == e.nframes-1 && !e.repeat) return false;
-			else return true;
+		entry.reverse = reverse;
+		if(entry.reverse){
+			entry.doNext = function(e, i){
+				if(i == 0 && !e.repeat) return false;
+				else return true;
+			}
+			entry.next = function(e, i){
+				i=(i-1+e.nframes)%e.nframes;
+				return i;
+			}
 		}
-		entry.next = function(e, i){
-			i=(i+1)%e.nframes;
-			return i;
+		else{
+			entry.doNext = function(e, i){
+				if(i == e.nframes-1 && !e.repeat) return false;
+				else return true;
+			}
+			entry.next = function(e, i){
+				i=(i+1)%e.nframes;
+				return i;
+			}
 		}
-
 		if(type == "column"){
 			entry.offx = data; entry.nframes = this.cell.y;
 			entry.update = function(e, i){

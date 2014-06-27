@@ -58,7 +58,7 @@ function loadAssets(){
 	assetManager.addTexture("grass_t", "assets/blocks/grass_top.png");
 	assetManager.addTexture("rose", "assets/sprites/flower_rose.png");
 	assetManager.addAnimatedTexture("fire",1,32,"assets/sprites/fire.png")
-		.add("burn", "column", 0, true)
+		.add("burn", "column", 0, true, true)
 		.set("burn");
 	assetManager.addTexture("redTulip", "assets/sprites/flower_tulip_red.png");
 	//add block
