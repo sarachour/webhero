@@ -6,11 +6,9 @@ AnimatedTexture = function(x,y,texture){
 	this.init = function(x,y, url){
 		this.cell = {x:x, y:y};
 		this.animations = {};
-		this.texture = new THREE.ImageUtils.loadTexture( url );;
-		console.log(texture);
+		this.texture = new THREE.ImageUtils.loadTexture( url );
 		this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping; 
 		this.texture.repeat.set( 1.0/this.cell.x, 1.0/this.cell.y);
-		//this.texture.repeat.set(1,1);
 		this.texture.magFilter = THREE.NearestFilter;
 		this.texture.minFilter = THREE.LinearMipMapLinearFilter;
 		this.current = {name: null, index: null};
