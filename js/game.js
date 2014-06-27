@@ -6,8 +6,10 @@ function generateLevel(w,h){
 		["grass"], 
 		["clay", "bedrock"],
 		["bedrock"]];
+	var sprite = ["redTulip", "fire"];
 	var level = {width: w, height: h, map:[]};
 	var maxy = 1;
+	var nsprites=0;
 	for(var i=0; i < w; i++){
 		for(var j=0; j<h; j++){
 			var coord = {loc:{x:i, z:j}, cells:[]};
@@ -20,9 +22,15 @@ function generateLevel(w,h){
 				var cell = {type:"block", name:tiles[k][blkidx]};
 				coord.cells.push(cell);
 			}
+			if(Math.random() > 0.7){
+				var blkidx = Math.floor(Math.random()*sprite.length);
+				coord.cells.push({type:"sprite", name:sprite[blkidx]});
+				nsprites++;
+			}
 			level.map.push(coord);
 		}
 	}
+	console.log("inserted sprites: ", nsprites)
 	return level;
 }
 Map = function(level){
@@ -42,8 +50,12 @@ Map = function(level){
 			var y = 0;
 			for(var j=0; j < coord.cells.length; j++){
 				var cell = coord.cells[j];
-				console.log(x,y,z);
-				var elem = assetManager.getBlock(cell.name).translate(x,y,z);
+				if(cell.type == "block"){
+					var elem = assetManager.getBlock(cell.name).translate(x,y,z);
+				}
+				else if(cell.type == "sprite"){
+					var elem = assetManager.getSprite(cell.name).translate(x,y,z);
+				}
 				this.scene.add(elem.d());
 				y += elem.getHeight();
 			}
@@ -74,7 +86,7 @@ Controls = function(camera){
 	this.init = function(camera){
 		this.controls = new THREE.FirstPersonControls( camera.d() );
 		this.camera = camera;
-		this.controls.movementSpeed = 0.3;
+		this.controls.movementSpeed = 0.6;
 		this.controls.lookSpeed = 0.065;
 		this.controls.lookVertical = true;
 	}

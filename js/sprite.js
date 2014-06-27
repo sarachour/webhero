@@ -90,7 +90,7 @@ Sprite = function(data){
 		if(data.type == "reference"){
 			this.texture = data.ref.texture;
 			this.material = data.ref.material;
-			this.mesh =  data.ref.mesh;
+			this.mesh =  new THREE.Sprite( this.material );
 		}
 		else if(data.type == "texture"){
 			this.texture = assetManager.getTexture(data.texture);
@@ -107,6 +107,9 @@ Sprite = function(data){
 			this.mesh = new THREE.Sprite( this.material );
 		}
 	}
+	this.getHeight = function(){
+		return 1;
+	}
 	this.instance = function(){
 		return new Sprite({type:"reference", ref:this});
 	}
@@ -115,6 +118,7 @@ Sprite = function(data){
 		this.y = y;
 		this.z = z;
 		this.mesh.position.set(x,y,z);
+		return this;
 	}
 	this.d = function(){
 		return this.mesh;
