@@ -1,24 +1,58 @@
-
-
-Map = function(){
-	this.init = function(){
+/*
+Level
+*/
+function generateLevel(w,h){
+	var tiles = [
+		["grass"], 
+		["clay", "bedrock"],
+		["bedrock"]];
+	var level = {width: w, height: h, map:[]};
+	var maxy = 1;
+	for(var i=0; i < w; i++){
+		for(var j=0; j<h; j++){
+			var coord = {loc:{x:i, z:j}, cells:[]};
+			var prob= Math.random();
+			if(prob > 0.9) y = 3;
+			else if(prob > 0.7) y = 2;
+			else y=1;
+			for(var k=0; k < y; k++){
+				var blkidx = Math.floor(Math.random()*tiles[k].length);
+				var cell = {type:"block", name:tiles[k][blkidx]};
+				coord.cells.push(cell);
+			}
+			level.map.push(coord);
+		}
+	}
+	return level;
+}
+Map = function(level){
+	this.init = function(level){
 		this.scene = new THREE.Scene();
-		this.w = 10;
-		this.h = 10;
-		var g = assetManager.getSprite("fire");
-		var g2 = assetManager.getBlock("grass");
-		var f = assetManager.getSprite("redTulip");
-		g2.translate(2,0,0);
-		g.translate(-1,0,0);
-		f.translate(1,0,0);
-		this.scene.add(g.d());
-		this.scene.add(g2.d());
-		this.scene.add(f.d());
+		this.skybox = new Skybox("sky");
+		this.scene.add(this.skybox.d());
+		this.load(generateLevel(10,10));
+	}
+	this.load = function(level){
+		this.w = level.width;
+		this.h = level.height;
+		for(var k=0; k < level.map.length; k++){
+			var coord = level.map[k];
+			var x = coord.loc.x;
+			var z = coord.loc.z;
+			var y = 0;
+			for(var j=0; j < coord.cells.length; j++){
+				var cell = coord.cells[j];
+				console.log(x,y,z);
+				var elem = assetManager.getBlock(cell.name).translate(x,y,z);
+				this.scene.add(elem.d());
+				y += elem.getHeight();
+			}
+		}
 	}
 	this.d = function(){
 		return this.scene;
 	}
-	this.init();
+	this.init(level);
 }
 Player = function (){
 
@@ -36,10 +70,20 @@ Camera = function(w,h){
 	}
 	this.init(w,h);
 }
-Controls = function(){
-
+Controls = function(camera){
+	this.init = function(camera){
+		this.controls = new THREE.FirstPersonControls( camera.d() );
+		this.camera = camera;
+		this.controls.movementSpeed = 0.3;
+		this.controls.lookSpeed = 0.065;
+		this.controls.lookVertical = true;
+	}
+	this.d = function(){
+		return this.controls;
+	}
+	this.init(camera);
 }
-Renderer = function(d,sc, cam, w,h){
+Renderer = function(d,sc, cam,cont, w,h){
 	this.animate = function(){
 
 	}
@@ -50,11 +94,13 @@ Renderer = function(d,sc, cam, w,h){
 			oldAnimate();
 		}
 	}
-	this.init = function(d,sc,cam,w,h){
+	this.init = function(d,sc,cam,cont,w,h){
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(w,h);
 		this.scene = sc;
 		this.camera = cam;
+		this.controls = cont;
+		this.clock = new THREE.Clock();
 		this.intervals = {animation: {step:1000/12, curr:0}};
 		d.appendChild(this.renderer.domElement);
 		var that = this;
@@ -64,21 +110,22 @@ Renderer = function(d,sc, cam, w,h){
 				that.animate();
 				that.intervals.animation.curr += that.intervals.animation.step;
 			}
-			that.renderer.render(that.scene, that.camera);
+			that.controls.d().update( that.clock.getDelta() );
+			that.renderer.render(that.scene.d(), that.camera.d());
 		}
 		render();
 	}
 	
 
-	this.init(d,sc,cam,w,h);
+	this.init(d,sc,cam,cont,w,h);
 }
 Game = function(d,w,h){
 	this.init = function(d,w,h){
 		this.player = new Player();
 		this.camera = new Camera(w,h);
-		this.controls = new Controls();
+		this.controls = new Controls(this.camera);
 		this.map = new Map();
-		this.renderer = new Renderer(d,this.map.d(), this.camera.d(), w,h);
+		this.renderer = new Renderer(d,this.map, this.camera, this.controls, w,h);
 
 	}
 	this.init(d,w,h);

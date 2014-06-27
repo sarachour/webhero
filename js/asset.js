@@ -8,10 +8,22 @@ AssetManager = function(){
 		this.assets.elements = {};
 
 	}
+	this.animation = function(){
+
+	}
 	this.addAnimatedTexture = function(id, xtiles, ytiles, anims, url){
 		this.assets.textures[id] = new AnimatedTexture(xtiles, ytiles, anims, url);
 		return this.assets.textures[id];
 	}
+
+	/*
+	this.addSkyboxTexture = function(id, posx, negx, posy, negy, posz, negz){
+		var urls = [posx, negx, posy, negy, posz, negz];
+		var tex = new THREE.ImageUtils.loadTextureCube(urls);
+		this.assets.textures[id] = tex;
+		return this.assets.textures[id];
+	}
+	*/
 	this.addTexture = function(id, url){
 		var tex=  new THREE.ImageUtils.loadTexture( url );
 		tex.wrapS = tex.wrapT = THREE.RepeatWrapping; 
@@ -19,6 +31,7 @@ AssetManager = function(){
 		tex.magFilter = THREE.NearestFilter;
 		tex.minFilter = THREE.LinearMipMapLinearFilter;
 		this.assets.textures[id] = tex;
+		return this.assets.textures[id];
 	}
 	this.getTexture = function(id){
 		if(this.assets.textures.hasOwnProperty(id)){
@@ -61,6 +74,7 @@ function loadAssets(){
 		.add("burn", "column", 0, true, true)
 		.set("burn");
 	assetManager.addTexture("redTulip", "assets/sprites/flower_tulip_red.png");
+	assetManager.addTexture("sky", "assets/skybox/sky.png")
 	//add block
 	assetManager.addBlock("clay", new Block({
 		type: "texture",
@@ -97,6 +111,8 @@ function loadAssets(){
 		{name: "bedrock", x:0, y:1, z:0},
 		{name: "bedrock", x:0, y:2, z:0},
 	]));
+
+
 }
 
 assetManager = new AssetManager();
