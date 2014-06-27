@@ -88,9 +88,15 @@ function loadAssets(){
 		type: "texture",
 		texture: "bedrock"
 	}));
+	/*
 	assetManager.addBlock("grass", new Block({
 		type: "multitexture",
 		texture: ["grass_s", "grass_s", "grass_t", "grass_s", "grass_s", "grass_s"]
+	}));
+	*/
+	assetManager.addBlock("grass", new Block({
+		type: "texture",
+		texture: "grass_t"
 	}));
 
 	assetManager.addSprite("redTulip", new Sprite({

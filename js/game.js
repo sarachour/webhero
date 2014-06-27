@@ -39,6 +39,11 @@ Map = function(level){
 		this.scene.fog = new THREE.FogExp2( 0xffffff, 0.15 );
 		this.skybox = new Skybox("sky");
 		this.scene.add(this.skybox.d());
+
+		var directionalLight = new THREE.DirectionalLight( 0xffffff, 2 );
+		directionalLight.position.set( 1, 1, 0.5 ).normalize();
+		this.scene.add( directionalLight );
+
 		this.load(generateLevel(10,10));
 	}
 	this.load = function(level){
@@ -52,15 +57,17 @@ Map = function(level){
 			for(var j=0; j < coord.cells.length; j++){
 				var cell = coord.cells[j];
 				if(cell.type == "block"){
-					var elem = assetManager.getBlock(cell.name).translate(x,y,z);
+					var elem = assetManager.getBlock(cell.name).translate(x,y,z).commit();
 				}
 				else if(cell.type == "sprite"){
 					var elem = assetManager.getSprite(cell.name).translate(x,y,z);
+					this.scene.add(elem);
 				}
-				this.scene.add(elem.d());
 				y += elem.getHeight();
 			}
 		}
+		console.log(Block.prototype.geometry);
+		this.scene.add(Block.prototype.d());
 	}
 	this.d = function(){
 		return this.scene;
@@ -114,6 +121,12 @@ Renderer = function(d,sc, cam,cont, w,h){
 		this.clock = new THREE.Clock();
 		this.intervals = {animation: {step:1000/12, curr:0}};
 		d.appendChild(this.renderer.domElement);
+
+		this.stats = new Stats();
+		this.stats.domElement.style.position = 'absolute';
+		this.stats.domElement.style.top = '0px';
+		d.appendChild( this.stats.domElement );
+
 		var that = this;
 		function render(time) {
 			requestAnimationFrame(render);
@@ -121,6 +134,7 @@ Renderer = function(d,sc, cam,cont, w,h){
 				that.animate();
 				that.intervals.animation.curr += that.intervals.animation.step;
 			}
+			that.stats.update();
 			that.controls.d().update( that.clock.getDelta() );
 			that.renderer.render(that.scene.d(), that.camera.d());
 		}
@@ -130,6 +144,7 @@ Renderer = function(d,sc, cam,cont, w,h){
 
 	this.init(d,sc,cam,cont,w,h);
 }
+
 Game = function(d,w,h){
 	this.init = function(d,w,h){
 		this.player = new Player();
