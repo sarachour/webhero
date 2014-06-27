@@ -230,10 +230,11 @@ Skybox = function(tex){
 				//side: THREE.DoubleSide
 		});
 		*/
-		this.geometry = new THREE.SphereGeometry(1000,10,10);
+		//this.geometry = new THREE.SphereGeometry(1000,10,10);
+		this.geometry = new THREE.BoxGeometry(1000,1000,1000,1,1,1);
 		this.mesh = new THREE.Mesh (this.geometry, this.material );
 		this.mesh.scale.set(-1,1,1);
-		//this.mesh.eulerOrder = "XZY";
+		this.mesh.eulerOrder = "XZY";
 		this.mesh.renderDepth = 1000.0;
 		
 	}
