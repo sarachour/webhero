@@ -36,6 +36,7 @@ function generateLevel(w,h){
 Map = function(level){
 	this.init = function(level){
 		this.scene = new THREE.Scene();
+		this.scene.fog = new THREE.FogExp2( 0xffffff, 0.15 );
 		this.skybox = new Skybox("sky");
 		this.scene.add(this.skybox.d());
 		this.load(generateLevel(10,10));
@@ -74,8 +75,6 @@ Camera = function(w,h){
 		this.camera = new THREE.PerspectiveCamera(75, w/h, 0.1, 1000);
 		this.camera.position.z = 5;
 		this.camera.position.y = 1;
-
-
 	}
 	this.d = function(){
 		return this.camera;
@@ -144,8 +143,8 @@ Game = function(d,w,h){
 }
 document.addEventListener('DOMContentLoaded', function() {
 	loadAssets();
-	game = new Game(document.body, 600, 400);
-
+	//game = new Game(document.body, 600, 400);
+	game = new Game(document.body, window.innerWidth, window.innerHeight);
 	game.renderer.addAnimation(function(){
 		assetManager.getTexture("fire").update();
 	});

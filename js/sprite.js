@@ -127,7 +127,12 @@ Sprite = function(data){
 }
 Block = function(data){
 	this.init = function(data){
-		
+		/*
+		// sides
+		var light = new THREE.Color( 0xffffff );
+		var shadow = new THREE.Color( 0x505050 );
+		var matrix = new THREE.Matrix4();
+		*/
 		this.data = data;
 		if(data.type == "reference"){
 			this.geometry = data.ref.geometry;
