@@ -7,6 +7,9 @@ Actor = function(asset){
 		this.asset.data = null;
 
 	}
+	this.collide = function(other){
+		
+	}
 	this.init(asset);
 }
 

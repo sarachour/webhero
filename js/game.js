@@ -129,6 +129,8 @@ Camera = function(w,h){
 		this.camera = new THREE.PerspectiveCamera(75, w/h, 0.1, 1000);
 		this.camera.position.z = 5;
 		this.camera.position.y = 1;
+		this.width = w;
+		this.height = h;
 	}
 	this.d = function(){
 		return this.camera;
@@ -138,10 +140,36 @@ Camera = function(w,h){
 Controls = function(camera){
 	this.init = function(camera){
 		this.controls = new THREE.FirstPersonControls( camera.d() );
+		this.controls.constrainVertical = true;
 		this.camera = camera;
 		this.controls.movementSpeed = 0.6;
 		this.controls.lookSpeed = 0.065;
+		//this.controls.lookVertical = false;
 		this.controls.lookVertical = true;
+		this.projector = new THREE.Projector();
+	}
+	this.pickFloor = function(scene){
+		var camera = this.camera.d();
+		var controls = this.controls;
+		//terrain raycaster
+		var vector = new THREE.Vector3(0,-1,0);
+    	var caster = new THREE.Raycaster( camera.position, vector )
+	    var intersects = caster.intersectObjects(scene.children);
+	    return intersects;
+        
+	}
+	this.pick = function(scene){
+		var camera = this.camera.d();
+		var controls = this.controls;
+    	//camera raycaster
+    	var phi = this.controls.phi; 
+    	var theta = this.controls.theta; 
+		var rot = new THREE.Euler( phi, 0, theta, 'XYZ' );
+    	var vector = new THREE.Vector3( 0, 1, 0 ).applyEuler(rot);
+    	var caster = new THREE.Raycaster( camera.position, vector );
+	    var intersects = caster.intersectObjects(scene.children);
+	    return intersects;
+        
 	}
 	this.d = function(){
 		return this.controls;
