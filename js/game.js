@@ -41,11 +41,11 @@ Map = function(level){
 		this.skybox = new Skybox("sky");
 		this.scene.add(this.skybox.d());
 
-		var directionalLight = new THREE.DirectionalLight( 0xfffeee, 1 );
+		var directionalLight = new THREE.DirectionalLight( 0xff9922, 1 );
 		directionalLight.position.set( 1, 1, 0.5 ).normalize();
 		this.scene.add( directionalLight );
 
-		var directionalLight = new THREE.DirectionalLight( 0xffffee, 1 );
+		var directionalLight = new THREE.DirectionalLight( 0x99ff22, 1 );
 		directionalLight.position.set( -1, 1, -0.5 ).normalize();
 		this.scene.add( directionalLight );
 
