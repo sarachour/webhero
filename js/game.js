@@ -55,7 +55,8 @@ Map = function(level){
 		this.w = level.width;
 		this.h = level.height;
 		var k = function(x,y,z){
-			return (x+","+y+","+z);
+			var key= (x+","+y+","+z);
+			return level.map.hasOwnProperty(key) && level.map[key].type == "block";
 		}
 		for(var id in level.map){
 			var cell = level.map[id];
@@ -63,15 +64,19 @@ Map = function(level){
 				var x = cell.x;
 				var y=  cell.y;
 				var z = cell.z;
-				var px = level.map.hasOwnProperty(k(x+1, y, z)) && level.map[k(x+1,y,z)].type == "block";
-				var nx = level.map.hasOwnProperty(k(x-1, y, z)) && level.map[k(x-1,y,z)].type == "block";
-				var py = level.map.hasOwnProperty(k(x, y+1, z)) && level.map[k(x,y+1,z)].type == "block";
-				var ny = level.map.hasOwnProperty(k(x, y-1, z)) && level.map[k(x,y-1,z)].type == "block";
-				var pz = level.map.hasOwnProperty(k(x, y, z+1)) && level.map[k(x,y,z+1)].type == "block";
-				var nz = level.map.hasOwnProperty(k(x, y, z-1)) && level.map[k(x,y,z-1)].type == "block";
+				var px = k(x+1,y,z); var nx = k(x-1,y,z); var py = k(x,y+1,z);
+				var ny = k(x,y-1,z); var pz = k(x,y,z+1); var nz = k(x,y,z-1);
+
+				var hpx = k(x+1,y+1,z); var hnx = k(x-1,y+1,z); 
+				var hpz = k(x,y+1,z+1); var hnz = k(x,y+1,z-1);
+
+				var hnxnz = k(x-1,y+1,z-1); var hpxnz = k(x+1,y+1,z-1)
+				var hnxpz = k(x-1,y+1,z+1); var hpxpz = k(x+1,y+1,z+1)
+				
+
 				var elem = assetManager.getBlock(cell.name)
 							.translate(x,y,z)
-							.neighbors(px, nx, py, ny, pz, nz)
+							.gcull(px, nx, py, ny, pz, nz)
 							.commit();
 			}
 			else if(cell.type == "sprite"){

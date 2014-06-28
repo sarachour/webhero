@@ -11,6 +11,8 @@ var Block = function(data){
 			this.x = data.ref.x;
 			this.y = data.ref.y;
 			this.z = data.ref.z;
+			this.cull = data.ref.cull;
+			this.shade = data.ref.shade;
 			this.mesh = new THREE.Mesh();
 			this.mesh.position.set(this.x,this.y,this.z);
 			this.mesh.updateMatrix();
@@ -29,20 +31,35 @@ var Block = function(data){
 		}
 		this.mesh = new THREE.Mesh();
 		this.material = [key,key,key,key,key,key];
-		this.neighbors = {py:false, 
+		this.cull = {py:false, 
 						  pz:false, 
 						  nz:false, 
 						  nx:false, 
 						  px:false, 
 						  ny:false};
+
+		this.shade = {
+			py: {v00 : false, v01 : false, v10 : false, v11 : false},
+			px: {v00 : false, v01 : false, v10 : false, v11 : false},
+			nx: {v00 : false, v01 : false, v10 : false, v11 : false},
+			pz: {v00 : false, v01 : false, v10 : false, v11 : false},
+			nz: {v00 : false, v01 : false, v10 : false, v11 : false}
+		}
 	}
-	this.neighbors = function(px, nx, py, ny, pz, nz){
-		this.neighbors.py = py;
-		this.neighbors.px = px;
-		this.neighbors.pz = pz;
-		this.neighbors.ny = ny;
-		this.neighbors.nx = nx;
-		this.neighbors.nz = nz;
+	this.gcull = function(px, nx, py, ny, pz, nz){
+		this.cull.py = py;
+		this.cull.px = px;
+		this.cull.pz = pz;
+		this.cull.ny = ny;
+		this.cull.nx = nx;
+		this.cull.nz = nz;
+		return this;
+	}
+	this.gshade = function(face, v00, v01, v10, v11){
+		this.shade[face].v00 = v00;
+		this.shade[face].v10 = v10;
+		this.shade[face].v11 = v11;
+		this.shade[face].v01 = v01;
 		return this;
 	}
 	this.instance = function(){
@@ -52,30 +69,46 @@ var Block = function(data){
 		return 1;
 	}
 	this.commit = function(){
-		var key = this.key;
-		if(!this.neighbors.py){
+		var key = this.key; var that = this;
+		var shadeMe = function(dummy, key){
+			var colors = dummy.geometry.faces[ 0 ].vertexColors;
+			colors[ 0 ] = that.shade[key].v00 ? that.shadow : that.light; //a == 0
+			colors[ 1 ] = that.shade[key].v01 ? that.shadow : that.light; //b == 0
+			colors[ 2 ] = that.shade[key].v10 ? this.shadow : that.light; //d == 0
+
+			var colors = dummy.geometry.faces[ 1 ].vertexColors;
+			colors[ 0 ] = that.shade[key].v01 ? that.shadow : that.light; //b==0
+			colors[ 1 ] = that.shade[key].v11 ? that.shadow : that.light; //c==0
+			colors[ 2 ] = that.shade[key].v10 ? that.shadow : that.light; //d==0
+		}
+		if(!this.cull.py){
 			this.mesh.materialIndex = this.materials.types[this.material[0]];
 			this.mesh.geometry = this.faces.pyGeometry;
+			shadeMe(this.mesh, "py");
 			this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
 		}
-		if(!this.neighbors.px){
+		if(!this.cull.px){
 			this.mesh.materialIndex = this.materials.types[this.material[1]];
 			this.mesh.geometry = this.faces.pxGeometry;
+			shadeMe(this.mesh, "px");
 			this.geometry.merge( this.mesh.geometry, this.mesh.matrix, this.mesh.materialIndex);
 		}
-		if(!this.neighbors.pz){
+		if(!this.cull.pz){
 			this.mesh.materialIndex = this.materials.types[this.material[2]];
 			this.mesh.geometry = this.faces.pzGeometry;
+			shadeMe(this.mesh, "pz");
 			this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
 		}
-		if(!this.neighbors.nx){
+		if(!this.cull.nx){
 			this.mesh.materialIndex = this.materials.types[this.material[3]];
 			this.mesh.geometry = this.faces.nxGeometry;
+			shadeMe(this.mesh, "nx");
 			this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
 		}
-		if(!this.neighbors.nz){
+		if(!this.cull.nz){
 			this.mesh.materialIndex = this.materials.types[this.material[4]];
 			this.mesh.geometry = this.faces.nzGeometry;
+			shadeMe(this.mesh, "nz");
 			this.geometry.merge( this.mesh.geometry, this.mesh.matrix, this.mesh.materialIndex);
 		}
 		return this;
@@ -152,6 +185,9 @@ function init(OBJCLASS){
 	nzGeometry.applyMatrix( matrix.makeTranslation( 0, 0, - 0.5 ) );
 
 	OBJCLASS.prototype = {};
+	OBJCLASS.prototype.light = light;
+	OBJCLASS.prototype.shadow = shadow;
+	
 	OBJCLASS.prototype.d = function(){
 		var material = new THREE.MeshFaceMaterial(OBJCLASS.prototype.materials.arr);
 		return new THREE.Mesh(OBJCLASS.prototype.geometry, material);
