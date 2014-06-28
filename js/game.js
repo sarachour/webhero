@@ -13,8 +13,8 @@ function generateLevel(w,h){
 	for(var i=0; i < w; i++){
 		for(var j=0; j<h; j++){
 			var prob= Math.random();
-			if(prob > 0.9) y = 3;
-			else if(prob > 0.7) y = 2;
+			if(prob > 0.95) y = 3;
+			else if(prob > 0.9) y = 2;
 			else y=1;
 			for(var k=0; k < y; k++){
 				var blkidx = Math.floor(Math.random()*tiles[k].length);
@@ -37,7 +37,7 @@ function generateLevel(w,h){
 Map = function(level){
 	this.init = function(level){
 		this.scene = new THREE.Scene();
-		this.scene.fog = new THREE.FogExp2( 0xffffff, 0.15 );
+		this.scene.fog = new THREE.FogExp2( 0xddddddd, 0.03 );
 		this.skybox = new Skybox("sky");
 		this.scene.add(this.skybox.d());
 
