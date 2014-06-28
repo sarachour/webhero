@@ -7,7 +7,7 @@ function generateLevel(w,h){
 		["clay", "grass"],
 		["clay"]];
 	var sprite = ["redTulip", "fire"];
-	var level = {width: w, height: h, map:{}};
+	var level = {x: w, y: h, z:3, map:{}};
 	var maxy = 1;
 	var nsprites=0;
 	for(var i=0; i < w; i++){
@@ -52,11 +52,15 @@ Map = function(level){
 		this.load(generateLevel(50,50));
 	}
 	this.load = function(level){
-		this.w = level.width;
-		this.h = level.height;
-		var k = function(x,y,z){
-			var key= (x+","+y+","+z);
-			return level.map.hasOwnProperty(key) && level.map[key].type == "block";
+		var k = function(x,z){
+			var y =0;
+			for(var i=0; i < level.y; i++){
+				var key= (x+","+i+","+z);
+				if(level.map.hasOwnProperty(key) && level.map[key].type == "block"){
+					y = i;
+				}
+			}
+			return y;
 		}
 		for(var id in level.map){
 			var cell = level.map[id];
@@ -64,19 +68,16 @@ Map = function(level){
 				var x = cell.x;
 				var y=  cell.y;
 				var z = cell.z;
-				var px = k(x+1,y,z); var nx = k(x-1,y,z); var py = k(x,y+1,z);
-				var ny = k(x,y-1,z); var pz = k(x,y,z+1); var nz = k(x,y,z-1);
-
-				var hpx = k(x+1,y+1,z); var hnx = k(x-1,y+1,z); 
-				var hpz = k(x,y+1,z+1); var hnz = k(x,y+1,z-1);
-
-				var hnxnz = k(x-1,y+1,z-1); var hpxnz = k(x+1,y+1,z-1)
-				var hnxpz = k(x-1,y+1,z+1); var hpxpz = k(x+1,y+1,z+1)
+				var c = k(x,z);
+				var px = k(x+1,z); var nx = k(x-1, z);
+				var pz = k(x,z+1); var nz = k(x,z-1);
+				var pxpz = k(x+1, z+1); var pxnz = k(x+1, z-1);
+				var nxpz = k(x-1, z+1); var nxnz = k(x-1, z-1);
 				
 
 				var elem = assetManager.getBlock(cell.name)
 							.translate(x,y,z)
-							.gcull(px, nx, py, ny, pz, nz)
+							.gcull(px>=y, nx>=y, c>y, y>0, pz>=y, nz>=y)
 							.commit();
 			}
 			else if(cell.type == "sprite"){
