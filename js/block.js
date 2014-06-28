@@ -132,8 +132,6 @@ function init(OBJCLASS){
 
 
 	var pxGeometry = new THREE.PlaneGeometry( 1, 1 );
-	pxGeometry.faces[ 0 ].vertexColors.push( light, shadow, light );
-	pxGeometry.faces[ 1 ].vertexColors.push( shadow, shadow, light );
 	pxGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
 	pxGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
 	pxGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
@@ -141,8 +139,6 @@ function init(OBJCLASS){
 	pxGeometry.applyMatrix( matrix.makeTranslation( 0.5, 0, 0 ) );
 
 	var nxGeometry = new THREE.PlaneGeometry( 1, 1 );
-	nxGeometry.faces[ 0 ].vertexColors.push( light, shadow, light );
-	nxGeometry.faces[ 1 ].vertexColors.push( shadow, shadow, light );
 	nxGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
 	nxGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
 	nxGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
@@ -150,8 +146,6 @@ function init(OBJCLASS){
 	nxGeometry.applyMatrix( matrix.makeTranslation( - 0.5, 0, 0 ) );
 
 	var pyGeometry = new THREE.PlaneGeometry( 1, 1 );
-	pyGeometry.faces[ 0 ].vertexColors.push( light, light, light );
-	pyGeometry.faces[ 1 ].vertexColors.push( light, light, light );
 	pyGeometry.faceVertexUvs[ 0 ][ 0 ][ 1 ].y = 0.5;
 	pyGeometry.faceVertexUvs[ 0 ][ 1 ][ 0 ].y = 0.5;
 	pyGeometry.faceVertexUvs[ 0 ][ 1 ][ 1 ].y = 0.5;
@@ -159,8 +153,6 @@ function init(OBJCLASS){
 	pyGeometry.applyMatrix( matrix.makeTranslation( 0, 0.5, 0 ) );
 
 	var py2Geometry = new THREE.PlaneGeometry( 1, 1 );
-	py2Geometry.faces[ 0 ].vertexColors.push( light, light, light );
-	py2Geometry.faces[ 1 ].vertexColors.push( light, light, light );
 	py2Geometry.faceVertexUvs[ 0 ][ 0 ][ 1 ].y = 0.5;
 	py2Geometry.faceVertexUvs[ 0 ][ 1 ][ 0 ].y = 0.5;
 	py2Geometry.faceVertexUvs[ 0 ][ 1 ][ 1 ].y = 0.5;
@@ -169,16 +161,12 @@ function init(OBJCLASS){
 	py2Geometry.applyMatrix( matrix.makeTranslation( 0,0.5, 0 ) );
 
 	var pzGeometry = new THREE.PlaneGeometry( 1, 1 );
-	pzGeometry.faces[ 0 ].vertexColors.push( light, shadow, light );
-	pzGeometry.faces[ 1 ].vertexColors.push( shadow, shadow, light );
 	pzGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
 	pzGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
 	pzGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
 	pzGeometry.applyMatrix( matrix.makeTranslation( 0, 0, 0.5 ) );
 
 	var nzGeometry = new THREE.PlaneGeometry( 1, 1 );
-	nzGeometry.faces[ 0 ].vertexColors.push( light, shadow, light );
-	nzGeometry.faces[ 1 ].vertexColors.push( shadow, shadow, light );
 	nzGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
 	nzGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
 	nzGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
