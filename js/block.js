@@ -127,6 +127,7 @@ var Block = function(data){
 function init(OBJCLASS){
 	var light = new THREE.Color( 0xffffff );
 	var shadow = new THREE.Color( 0x505050 );
+	//var shadow = new THREE.Color( 0xFF2020 );
 	var matrix = new THREE.Matrix4();
 
 
