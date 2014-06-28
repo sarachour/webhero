@@ -10,6 +10,7 @@ Sprite = function(data){
 			this.texture = data.ref.texture;
 			this.material = data.ref.material;
 			this.geometry = data.ref.geometry;
+			this.geometry2 = data.ref.geometry2;
 			this.mesh =  new THREE.Mesh(this.geometry, this.material );
 		}
 		else if(data.type == "texture"){
@@ -19,7 +20,12 @@ Sprite = function(data){
 				transparent: true,
 				side: THREE.DoubleSide
 			});
+
+			var matrix = new THREE.Matrix4();
 			this.geometry = new THREE.PlaneGeometry(1,1);
+			this.geometry2 = new THREE.PlaneGeometry(1,1);
+			this.geometry2.applyMatrix( matrix.makeRotationY( - Math.PI / 2 ) );
+			this.geometry.merge(this.geometry2);
 			this.mesh = new THREE.Sprite( this.geometry, this.material );
 		}
 		else if(data.type == "anim-texture"){
@@ -29,7 +35,11 @@ Sprite = function(data){
 				transparent: true,
 				side: THREE.DoubleSide
 			});
+			var matrix = new THREE.Matrix4();
 			this.geometry = new THREE.PlaneGeometry(1,1);
+			this.geometry2 = new THREE.PlaneGeometry(1,1);
+			this.geometry2.applyMatrix( matrix.makeRotationY( - Math.PI / 2 ) );
+			this.geometry.merge(this.geometry2);
 			this.mesh = new THREE.Sprite(this.geometry, this.material );
 		}
 	}
@@ -50,34 +60,4 @@ Sprite = function(data){
 		return this.mesh;
 	}
 	this.init(data);
-}
-
-
-Element = function(blocks){
-	//internal coordinate system
-	this.init = function(b){
-		this.x = this.y = this.z = 0;
-		this.group = new THREE.Object3D();
-		this.block = b;
-		for(var i =0; i < blocks.length; i++){
-			var model = assetManager.getBlock(b[i].name).instance();
-			model.translate(b[i].x, b[i].y, b[i].z);
-			this.block[i].model = model;
-			this.group.add(model.d());
-			//this.group = model;
-		}
-	}
-	this.instance = function(){
-		return new Element(this.block);
-	}
-	this.translate = function(x,y,z){
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.group.position.set(x,y,z);
-	}
-	this.d = function(){
-		return this.group;
-	}
-	this.init(blocks);
 }
