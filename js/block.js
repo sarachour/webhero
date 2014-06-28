@@ -132,16 +132,16 @@ function init(OBJCLASS){
 
 
 	var pxGeometry = new THREE.PlaneGeometry( 1, 1 );
-	pxGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
-	pxGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
-	pxGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
+	pxGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 1.0;
+	pxGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 1.0;
+	pxGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 1.0;
 	pxGeometry.applyMatrix( matrix.makeRotationY( Math.PI / 2 ) );
 	pxGeometry.applyMatrix( matrix.makeTranslation( 0.5, 0, 0 ) );
 
 	var nxGeometry = new THREE.PlaneGeometry( 1, 1 );
-	nxGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
-	nxGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
-	nxGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
+	nxGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 1.0;
+	nxGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 1.0;
+	nxGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 1.0;
 	nxGeometry.applyMatrix( matrix.makeRotationY( - Math.PI / 2 ) );
 	nxGeometry.applyMatrix( matrix.makeTranslation( - 0.5, 0, 0 ) );
 
@@ -153,23 +153,23 @@ function init(OBJCLASS){
 	pyGeometry.applyMatrix( matrix.makeTranslation( 0, 0.5, 0 ) );
 
 	var py2Geometry = new THREE.PlaneGeometry( 1, 1 );
-	py2Geometry.faceVertexUvs[ 0 ][ 0 ][ 1 ].y = 0.5;
-	py2Geometry.faceVertexUvs[ 0 ][ 1 ][ 0 ].y = 0.5;
-	py2Geometry.faceVertexUvs[ 0 ][ 1 ][ 1 ].y = 0.5;
+	py2Geometry.faceVertexUvs[ 0 ][ 0 ][ 1 ].y = 1.0;
+	py2Geometry.faceVertexUvs[ 0 ][ 1 ][ 0 ].y = 1.0;
+	py2Geometry.faceVertexUvs[ 0 ][ 1 ][ 1 ].y = 1.0;
 	py2Geometry.applyMatrix( matrix.makeRotationX( - Math.PI / 2 ) );
 	py2Geometry.applyMatrix( matrix.makeRotationY( Math.PI / 2 ) );
 	py2Geometry.applyMatrix( matrix.makeTranslation( 0,0.5, 0 ) );
 
 	var pzGeometry = new THREE.PlaneGeometry( 1, 1 );
-	pzGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
-	pzGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
-	pzGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
+	pzGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 1.0;
+	pzGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 1.0;
+	pzGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 1.0;
 	pzGeometry.applyMatrix( matrix.makeTranslation( 0, 0, 0.5 ) );
 
 	var nzGeometry = new THREE.PlaneGeometry( 1, 1 );
-	nzGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 0.5;
-	nzGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 0.5;
-	nzGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 0.5;
+	nzGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = 1.0;
+	nzGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = 1.0;
+	nzGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = 1.0;
 	nzGeometry.applyMatrix( matrix.makeRotationY( Math.PI ) );
 	nzGeometry.applyMatrix( matrix.makeTranslation( 0, 0, - 0.5 ) );
 
