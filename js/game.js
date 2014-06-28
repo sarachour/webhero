@@ -4,30 +4,31 @@ Level
 function generateLevel(w,h){
 	var tiles = [
 		["grass"], 
-		["clay", "bedrock"],
-		["bedrock"]];
+		["clay", "grass"],
+		["clay"]];
 	var sprite = ["redTulip", "fire"];
-	var level = {width: w, height: h, map:[]};
+	var level = {width: w, height: h, map:{}};
 	var maxy = 1;
 	var nsprites=0;
 	for(var i=0; i < w; i++){
 		for(var j=0; j<h; j++){
-			var coord = {loc:{x:i, z:j}, cells:[]};
 			var prob= Math.random();
 			if(prob > 0.9) y = 3;
 			else if(prob > 0.7) y = 2;
 			else y=1;
 			for(var k=0; k < y; k++){
 				var blkidx = Math.floor(Math.random()*tiles[k].length);
-				var cell = {type:"block", name:tiles[k][blkidx]};
-				coord.cells.push(cell);
+				var key = i+","+k+","+j;
+				var val = {x:i, y:k, z:j, type:"block", name:tiles[k][blkidx]};
+				level.map[key] = val;
 			}
 			if(Math.random() > 0.7){
 				var blkidx = Math.floor(Math.random()*sprite.length);
-				coord.cells.push({type:"sprite", name:sprite[blkidx]});
+				var key = i+","+k+","+j;
+				var val = {x:i, y:k, z:j, type:"sprite", name:sprite[blkidx]};
+				level.map[key] = val;
 				nsprites++;
 			}
-			level.map.push(coord);
 		}
 	}
 	console.log("inserted sprites: ", nsprites)
@@ -40,33 +41,45 @@ Map = function(level){
 		this.skybox = new Skybox("sky");
 		this.scene.add(this.skybox.d());
 
-		var directionalLight = new THREE.DirectionalLight( 0xffffff, 2 );
+		var directionalLight = new THREE.DirectionalLight( 0xfffeee, 1 );
 		directionalLight.position.set( 1, 1, 0.5 ).normalize();
 		this.scene.add( directionalLight );
 
-		this.load(generateLevel(10,10));
+		var directionalLight = new THREE.DirectionalLight( 0xffffee, 1 );
+		directionalLight.position.set( -1, 1, -0.5 ).normalize();
+		this.scene.add( directionalLight );
+
+		this.load(generateLevel(50,50));
 	}
 	this.load = function(level){
 		this.w = level.width;
 		this.h = level.height;
-		for(var k=0; k < level.map.length; k++){
-			var coord = level.map[k];
-			var x = coord.loc.x;
-			var z = coord.loc.z;
-			var y = 0;
-			for(var j=0; j < coord.cells.length; j++){
-				var cell = coord.cells[j];
-				if(cell.type == "block"){
-					var elem = assetManager.getBlock(cell.name).translate(x,y,z).commit();
-				}
-				else if(cell.type == "sprite"){
-					var elem = assetManager.getSprite(cell.name).translate(x,y,z);
-					this.scene.add(elem.d());
-				}
-				y += elem.getHeight();
+		var k = function(x,y,z){
+			return (x+","+y+","+z);
+		}
+		for(var id in level.map){
+			var cell = level.map[id];
+			if(cell.type == "block"){
+				var x = cell.x;
+				var y=  cell.y;
+				var z = cell.z;
+				var px = level.map.hasOwnProperty(k(x+1, y, z)) && level.map[k(x+1,y,z)].type == "block";
+				var nx = level.map.hasOwnProperty(k(x-1, y, z)) && level.map[k(x-1,y,z)].type == "block";
+				var py = level.map.hasOwnProperty(k(x, y+1, z)) && level.map[k(x,y+1,z)].type == "block";
+				var ny = level.map.hasOwnProperty(k(x, y-1, z)) && level.map[k(x,y-1,z)].type == "block";
+				var pz = level.map.hasOwnProperty(k(x, y, z+1)) && level.map[k(x,y,z+1)].type == "block";
+				var nz = level.map.hasOwnProperty(k(x, y, z-1)) && level.map[k(x,y,z-1)].type == "block";
+				var elem = assetManager.getBlock(cell.name)
+							.translate(x,y,z)
+							.neighbors(px, nx, py, ny, pz, nz)
+							.commit();
+			}
+			else if(cell.type == "sprite"){
+				var elem = assetManager.getSprite(cell.name)
+							.translate(cell.x,cell.y,cell.z);
+				this.scene.add(elem.d());
 			}
 		}
-		console.log(Block.prototype.geometry);
 		this.scene.add(Block.prototype.d());
 	}
 	this.d = function(){

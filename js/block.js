@@ -17,18 +17,33 @@ var Block = function(data){
 			return;
 		}
 		var key = data.type + ":" + (data.type == "texture" ? data.texture : data.color);
-		if(!this.materials.types.hasOwnProperty(key)){
-			this.materials.types[key] = this.materials.arr.length;
-			var mat = new THREE.MeshLambertMaterial( { 
-				map: assetManager.getTexture(data.texture), 
-				ambient: 0xbbbbbb, 
-				vertexColors: THREE.VertexColors,
-				shading: THREE.SmoothShading
-			});
-			this.materials.arr.push(mat);
+		if(data.type == "texture"){
+			this.addMaterial(key, data.texture);
+			this.material = [key,key,key,key,key,key];
+		}
+		if(data.type == "multitexture"){
+			for(var i=0; i < data.texture.length; i++){
+				this.addMaterial(key, data.texture[i]);
+			}
+			this.material = data.textures;
 		}
 		this.mesh = new THREE.Mesh();
-		this.material = key;
+		this.material = [key,key,key,key,key,key];
+		this.neighbors = {py:false, 
+						  pz:false, 
+						  nz:false, 
+						  nx:false, 
+						  px:false, 
+						  ny:false};
+	}
+	this.neighbors = function(px, nx, py, ny, pz, nz){
+		this.neighbors.py = py;
+		this.neighbors.px = px;
+		this.neighbors.pz = pz;
+		this.neighbors.ny = ny;
+		this.neighbors.nx = nx;
+		this.neighbors.nz = nz;
+		return this;
 	}
 	this.instance = function(){
 		return new Block({type:"reference", ref:this});
@@ -38,17 +53,31 @@ var Block = function(data){
 	}
 	this.commit = function(){
 		var key = this.key;
-		this.mesh.materialIndex = this.materials.types[this.material];
-		this.mesh.geometry = this.faces.pyGeometry;
-		this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
-		this.mesh.geometry = this.faces.pxGeometry;
-		this.geometry.merge( this.mesh.geometry, this.mesh.matrix, this.materialIndex);
-		this.mesh.geometry = this.faces.pzGeometry;
-		this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.materialIndex);
-		this.mesh.geometry = this.faces.nxGeometry;
-		this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.materialIndex);
-		this.mesh.geometry = this.faces.nzGeometry;
-		this.geometry.merge( this.mesh.geometry, this.mesh.matrix, this.materialIndex);
+		if(!this.neighbors.py){
+			this.mesh.materialIndex = this.materials.types[this.material[0]];
+			this.mesh.geometry = this.faces.pyGeometry;
+			this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
+		}
+		if(!this.neighbors.px){
+			this.mesh.materialIndex = this.materials.types[this.material[1]];
+			this.mesh.geometry = this.faces.pxGeometry;
+			this.geometry.merge( this.mesh.geometry, this.mesh.matrix, this.mesh.materialIndex);
+		}
+		if(!this.neighbors.pz){
+			this.mesh.materialIndex = this.materials.types[this.material[2]];
+			this.mesh.geometry = this.faces.pzGeometry;
+			this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
+		}
+		if(!this.neighbors.nx){
+			this.mesh.materialIndex = this.materials.types[this.material[3]];
+			this.mesh.geometry = this.faces.nxGeometry;
+			this.geometry.merge( this.mesh.geometry, this.mesh.matrix , this.mesh.materialIndex);
+		}
+		if(!this.neighbors.nz){
+			this.mesh.materialIndex = this.materials.types[this.material[4]];
+			this.mesh.geometry = this.faces.nzGeometry;
+			this.geometry.merge( this.mesh.geometry, this.mesh.matrix, this.mesh.materialIndex);
+		}
 		return this;
 	}
 	this.translate = function(x,y,z){
@@ -124,7 +153,6 @@ function init(OBJCLASS){
 
 	OBJCLASS.prototype = {};
 	OBJCLASS.prototype.d = function(){
-		console.log(OBJCLASS.prototype.materials.arr);
 		var material = new THREE.MeshFaceMaterial(OBJCLASS.prototype.materials.arr);
 		return new THREE.Mesh(OBJCLASS.prototype.geometry, material);
 	}
@@ -140,8 +168,20 @@ function init(OBJCLASS){
 		light: light,
 		shadow: shadow
 	}
+	OBJCLASS.prototype.addMaterial = function(key, tex){
+		if(!this.materials.types.hasOwnProperty(key)){
+			this.materials.types[key] = this.materials.arr.length;
+			var mat = new THREE.MeshLambertMaterial( { 
+				map: assetManager.getTexture(tex), 
+				ambient: 0xbbbbbb, 
+				vertexColors: THREE.VertexColors,
+				shading: THREE.SmoothShading
+			});
+			this.materials.arr.push(mat);
+		}
+		return this.materials.types[key];
+	}
 	OBJCLASS.prototype.materials = {types:{}, arr:[]};
 	OBJCLASS.prototype.geometry = new THREE.Geometry();
-	console.log(OBJCLASS);
 };
 init(Block);
