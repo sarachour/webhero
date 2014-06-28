@@ -90,21 +90,28 @@ Sprite = function(data){
 		if(data.type == "reference"){
 			this.texture = data.ref.texture;
 			this.material = data.ref.material;
-			this.mesh =  new THREE.Sprite( this.material );
+			this.geometry = data.ref.geometry;
+			this.mesh =  new THREE.Mesh(this.geometry, this.material );
 		}
 		else if(data.type == "texture"){
 			this.texture = assetManager.getTexture(data.texture);
-			this.material = new THREE.SpriteMaterial({
-				map: this.texture
+			this.material = new THREE.MeshBasicMaterial({
+				map: this.texture,
+				transparent: true,
+				side: THREE.DoubleSide
 			});
-			this.mesh = new THREE.Sprite( this.material );
+			this.geometry = new THREE.PlaneGeometry(1,1);
+			this.mesh = new THREE.Sprite( this.geometry, this.material );
 		}
 		else if(data.type == "anim-texture"){
 			this.texture = assetManager.getTexture(data.texture);
-			this.material = new THREE.SpriteMaterial({
-				map: this.texture.d()
+			this.material = new THREE.MeshBasicMaterial({
+				map: this.texture.d(),
+				transparent: true,
+				side: THREE.DoubleSide
 			});
-			this.mesh = new THREE.Sprite( this.material );
+			this.geometry = new THREE.PlaneGeometry(1,1);
+			this.mesh = new THREE.Sprite(this.geometry, this.material );
 		}
 	}
 	this.getHeight = function(){
