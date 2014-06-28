@@ -78,11 +78,16 @@ Map = function(level){
 				var elem = assetManager.getBlock(cell.name)
 							.translate(x,y,z)
 							.gcull(px>=y, nx>=y, c>y, y>0, pz>=y, nz>=y)
+							.gshade("py", 
+										nx > y || nz > y || nxnz > y, 
+										nx > y || pz > y || nxpz > y, 
+										px > y || nz > y || pxnz > y,
+										px > y || pz > y || pxpz > y) //0,0 is negx, negz
 							.commit();
 			}
 			else if(cell.type == "sprite"){
 				var elem = assetManager.getSprite(cell.name)
-							.translate(cell.x,cell.y,cell.z);
+							.translate(cell.x,cell.y,cell.z)
 				this.scene.add(elem.d());
 			}
 		}

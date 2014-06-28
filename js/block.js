@@ -74,7 +74,7 @@ var Block = function(data){
 			var colors = dummy.geometry.faces[ 0 ].vertexColors;
 			colors[ 0 ] = that.shade[key].v00 ? that.shadow : that.light; //a == 0
 			colors[ 1 ] = that.shade[key].v01 ? that.shadow : that.light; //b == 0
-			colors[ 2 ] = that.shade[key].v10 ? this.shadow : that.light; //d == 0
+			colors[ 2 ] = that.shade[key].v10 ? that.shadow : that.light; //d == 0
 
 			var colors = dummy.geometry.faces[ 1 ].vertexColors;
 			colors[ 0 ] = that.shade[key].v01 ? that.shadow : that.light; //b==0
