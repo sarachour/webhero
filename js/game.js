@@ -176,7 +176,21 @@ Controls = function(camera){
 	}
 	this.init(camera);
 }
-Renderer = function(d,sc, cam,cont, w,h){
+Renderer = function(w,h){
+	this.d = function(){
+		return this.renderer;
+	}
+	this.init = function(w,h){
+		this.renderer = new THREE.WebGLRenderer();
+		this.renderer.setSize(w,h);
+		var that = this;
+		
+		
+	}	
+	this.init(w,h);
+}
+
+Game = function(d,w,h){
 	this.animate = function(){
 
 	}
@@ -187,47 +201,38 @@ Renderer = function(d,sc, cam,cont, w,h){
 			oldAnimate();
 		}
 	}
-	this.init = function(d,sc,cam,cont,w,h){
-		this.renderer = new THREE.WebGLRenderer();
-		this.renderer.setSize(w,h);
-		this.scene = sc;
-		this.camera = cam;
-		this.controls = cont;
+	this.init = function(d,w,h){
+		this.player = new Player();
+		this.camera = new Camera(w,h);
+		this.controls = new Controls(this.camera);
+		this.map = new Map();
 		this.clock = new THREE.Clock();
-		this.intervals = {animation: {step:1000/12, curr:0}};
-		d.appendChild(this.renderer.domElement);
+		this.intervals = {animation: {step:1000/12, curr:null}};
 
 		this.stats = new Stats();
 		this.stats.domElement.style.position = 'absolute';
 		this.stats.domElement.style.top = '0px';
 		d.appendChild( this.stats.domElement );
 
+		this.renderer = new Renderer(w,h);
+		d.appendChild(this.renderer.d().domElement);
+
 		var that = this;
 		function render(time) {
 			requestAnimationFrame(render);
-			if(time > that.intervals.animation.curr){
-				that.animate();
-				that.intervals.animation.curr += that.intervals.animation.step;
-			}
-			that.stats.update();
-			that.controls.d().update( that.clock.getDelta() );
-			that.renderer.render(that.scene.d(), that.camera.d());
+			that.loop(time);
 		}
 		render();
+
 	}
-	
-
-	this.init(d,sc,cam,cont,w,h);
-}
-
-Game = function(d,w,h){
-	this.init = function(d,w,h){
-		this.player = new Player();
-		this.camera = new Camera(w,h);
-		this.controls = new Controls(this.camera);
-		this.map = new Map();
-		this.renderer = new Renderer(d,this.map, this.camera, this.controls, w,h);
-
+	this.loop = function(time){
+		this.stats.update()
+		if(this.intervals.animation.curr == null || time > this.intervals.animation.curr){
+			this.animate();
+			this.intervals.animation.curr += this.intervals.animation.step;
+		};
+		this.controls.d().update( this.clock.getDelta() );
+		this.renderer.d().render(this.map.d(), this.camera.d());
 	}
 	this.init(d,w,h);
 }
@@ -235,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	loadAssets();
 	//game = new Game(document.body, 600, 400);
 	game = new Game(document.body, window.innerWidth, window.innerHeight);
-	game.renderer.addAnimation(function(){
+	game.addAnimation(function(){
 		assetManager.getTexture("fire").update();
 	});
 
